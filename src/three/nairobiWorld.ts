@@ -39,6 +39,17 @@ export interface ParticleState {
   b: number;
 }
 
+interface TireSmokeState extends ParticleState {
+  rotation: number;
+  rotationSpeed: number;
+}
+
+interface ExhaustFlameState extends ParticleState {
+  directionX: number;
+  directionY: number;
+  directionZ: number;
+}
+
 export interface NairobiWorldHandle {
   sunLight: THREE.DirectionalLight;
   beaconGroup: THREE.Group;
@@ -60,7 +71,33 @@ export interface NairobiWorldHandle {
     g: number,
     b: number,
   ) => void;
-  updateParticles: (dt: number) => void;
+  spawnTireSmoke: (
+    x: number,
+    y: number,
+    z: number,
+    vx: number,
+    vy: number,
+    vz: number,
+    scale: number,
+    life: number,
+    r: number,
+    g: number,
+    b: number,
+  ) => void;
+  spawnExhaustFlame: (
+    x: number,
+    y: number,
+    z: number,
+    directionX: number,
+    directionY: number,
+    directionZ: number,
+    vx: number,
+    vy: number,
+    vz: number,
+    scale: number,
+    life: number,
+  ) => void;
+  updateParticles: (dt: number, cameraQuaternion: THREE.Quaternion) => void;
   updateRouteChevrons: (elapsed: number, visible: boolean) => void;
   updateWeather: (condition: WeatherCondition, focusX: number, focusZ: number, dt: number) => void;
   setBeaconPosition: (x: number, z: number, elapsed: number) => void;
@@ -69,6 +106,8 @@ export interface NairobiWorldHandle {
 }
 
 const PARTICLE_POOL_SIZE = 180;
+const TIRE_SMOKE_POOL_SIZE = 96;
+const EXHAUST_FLAME_POOL_SIZE = 72;
 const SKID_POOL_SIZE = 320;
 const _dummyMatrix = new THREE.Matrix4();
 const _dummyPos = new THREE.Vector3();
@@ -76,6 +115,49 @@ const _dummyQuat = new THREE.Quaternion();
 const _dummyEuler = new THREE.Euler();
 const _dummyScale = new THREE.Vector3();
 const _dummyColor = new THREE.Color();
+
+function createSmokeTexture(): THREE.DataTexture {
+  const size = 64;
+  const pixels = new Uint8Array(size * size * 4);
+  for (let y = 0; y < size; y++) {
+    for (let x = 0; x < size; x++) {
+      const u = (x / (size - 1)) * 2 - 1;
+      const v = (y / (size - 1)) * 2 - 1;
+      const radius = Math.sqrt(u * u * 0.86 + v * v * 1.08);
+      const edge = Math.max(0, 1 - radius);
+      const wisps = 0.86 + 0.08 * Math.sin(x * 0.45 + y * 0.17) + 0.06 * Math.cos(y * 0.38 - x * 0.13);
+      const alpha = Math.round(255 * Math.pow(edge, 1.55) * wisps);
+      const index = (y * size + x) * 4;
+      pixels[index] = 255;
+      pixels[index + 1] = 255;
+      pixels[index + 2] = 255;
+      pixels[index + 3] = alpha;
+    }
+  }
+
+  const texture = new THREE.DataTexture(pixels, size, size, THREE.RGBAFormat);
+  texture.colorSpace = THREE.SRGBColorSpace;
+  texture.magFilter = THREE.LinearFilter;
+  texture.minFilter = THREE.LinearFilter;
+  texture.generateMipmaps = false;
+  texture.needsUpdate = true;
+  return texture;
+}
+
+function addInstancedOpacity(material: THREE.MeshBasicMaterial): void {
+  material.onBeforeCompile = (shader) => {
+    shader.vertexShader = shader.vertexShader
+      .replace(
+        '#include <common>',
+        '#include <common>\nattribute float aParticleOpacity;\nvarying float vParticleOpacity;',
+      )
+      .replace('#include <begin_vertex>', '#include <begin_vertex>\nvParticleOpacity = aParticleOpacity;');
+    shader.fragmentShader = shader.fragmentShader
+      .replace('#include <common>', '#include <common>\nvarying float vParticleOpacity;')
+      .replace('#include <color_fragment>', '#include <color_fragment>\ndiffuseColor.a *= vParticleOpacity;');
+  };
+  material.customProgramCacheKey = () => 'racing-instanced-particle-opacity-v1';
+}
 
 export function buildNairobiWorld(
   scene: THREE.Scene,
@@ -1245,6 +1327,126 @@ export function buildNairobiWorld(
   if (particleMesh.instanceColor) particleMesh.instanceColor.needsUpdate = true;
   scene.add(particleMesh);
 
+  // Soft billboard tire smoke uses a small procedural alpha texture and per-instance fade.
+  const tireSmokePool: TireSmokeState[] = Array.from({ length: TIRE_SMOKE_POOL_SIZE }, () => ({
+    active: false,
+    x: 0,
+    y: -100,
+    z: 0,
+    vx: 0,
+    vy: 0,
+    vz: 0,
+    life: 0,
+    maxLife: 1,
+    scale: 1,
+    r: 0.72,
+    g: 0.76,
+    b: 0.8,
+    rotation: 0,
+    rotationSpeed: 0,
+  }));
+  let tireSmokeCursor = 0;
+  const smokeTexture = createSmokeTexture();
+  disposables.push(smokeTexture);
+  const smokeGeo = trackGeo(new THREE.PlaneGeometry(1, 1));
+  const smokeOpacity = new THREE.InstancedBufferAttribute(new Float32Array(TIRE_SMOKE_POOL_SIZE), 1);
+  smokeGeo.setAttribute('aParticleOpacity', smokeOpacity);
+  const smokeMat = trackMat(
+    new THREE.MeshBasicMaterial({
+      map: smokeTexture,
+      transparent: true,
+      opacity: 0.9,
+      vertexColors: true,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      toneMapped: false,
+    }),
+  );
+  addInstancedOpacity(smokeMat);
+  const smokeInst = new THREE.InstancedMesh(smokeGeo, smokeMat, TIRE_SMOKE_POOL_SIZE);
+  smokeInst.frustumCulled = false;
+  smokeInst.renderOrder = 2;
+  for (let i = 0; i < TIRE_SMOKE_POOL_SIZE; i++) {
+    _dummyPos.set(0, -100, 0);
+    _dummyQuat.identity();
+    _dummyScale.setScalar(0.001);
+    _dummyMatrix.compose(_dummyPos, _dummyQuat, _dummyScale);
+    smokeInst.setMatrixAt(i, _dummyMatrix);
+    smokeInst.setColorAt(i, _dummyColor.setRGB(1, 1, 1));
+    smokeOpacity.array[i] = 0;
+  }
+  smokeInst.instanceMatrix.needsUpdate = true;
+  if (smokeInst.instanceColor) smokeInst.instanceColor.needsUpdate = true;
+  smokeOpacity.needsUpdate = true;
+  scene.add(smokeInst);
+
+  // Short-lived, oriented flame tongues trail each exhaust while nitrous is active.
+  const exhaustFlamePool: ExhaustFlameState[] = Array.from(
+    { length: EXHAUST_FLAME_POOL_SIZE },
+    () => ({
+      active: false,
+      x: 0,
+      y: -100,
+      z: 0,
+      vx: 0,
+      vy: 0,
+      vz: 0,
+      life: 0,
+      maxLife: 1,
+      scale: 1,
+      r: 1,
+      g: 0.7,
+      b: 0.3,
+      directionX: 0,
+      directionY: 0,
+      directionZ: 1,
+    }),
+  );
+  let exhaustFlameCursor = 0;
+  const flameGeo = trackGeo(new THREE.ConeGeometry(0.14, 0.56, 9, 2));
+  const flameOpacity = new THREE.InstancedBufferAttribute(
+    new Float32Array(EXHAUST_FLAME_POOL_SIZE),
+    1,
+  );
+  flameGeo.setAttribute('aParticleOpacity', flameOpacity);
+  const flameMat = trackMat(
+    new THREE.MeshBasicMaterial({
+      color: 0xffffff,
+      transparent: true,
+      opacity: 0.95,
+      vertexColors: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      toneMapped: false,
+    }),
+  );
+  addInstancedOpacity(flameMat);
+  const flameInst = new THREE.InstancedMesh(flameGeo, flameMat, EXHAUST_FLAME_POOL_SIZE);
+  flameInst.frustumCulled = false;
+  flameInst.renderOrder = 3;
+  for (let i = 0; i < EXHAUST_FLAME_POOL_SIZE; i++) {
+    _dummyPos.set(0, -100, 0);
+    _dummyQuat.identity();
+    _dummyScale.setScalar(0.001);
+    _dummyMatrix.compose(_dummyPos, _dummyQuat, _dummyScale);
+    flameInst.setMatrixAt(i, _dummyMatrix);
+    flameInst.setColorAt(i, _dummyColor.setRGB(1, 1, 1));
+    flameOpacity.array[i] = 0;
+  }
+  flameInst.instanceMatrix.needsUpdate = true;
+  if (flameInst.instanceColor) flameInst.instanceColor.needsUpdate = true;
+  flameOpacity.needsUpdate = true;
+  scene.add(flameInst);
+
+  const _smokeColor = new THREE.Color();
+  const _flameColor = new THREE.Color();
+  const _smokeQuat = new THREE.Quaternion();
+  const _smokeRoll = new THREE.Quaternion();
+  const _flameQuat = new THREE.Quaternion();
+  const _flameAxis = new THREE.Vector3(0, 1, 0);
+  const _flameDirection = new THREE.Vector3();
+  const _screenNormal = new THREE.Vector3(0, 0, 1);
+
   // 14. 3D Glowing Street Route Direction Chevrons (so lagging drivers see every turn!)
   const chevronShape = new THREE.Shape();
   chevronShape.moveTo(0, 2.4);
@@ -1410,7 +1612,43 @@ export function buildNairobiWorld(
       p.g = g;
       p.b = b;
     },
-    updateParticles: (dt: number) => {
+    spawnTireSmoke: (x, y, z, vx, vy, vz, scale, life, r, g, b) => {
+      const p = tireSmokePool[tireSmokeCursor];
+      tireSmokeCursor = (tireSmokeCursor + 1) % TIRE_SMOKE_POOL_SIZE;
+      p.active = true;
+      p.x = x;
+      p.y = y;
+      p.z = z;
+      p.vx = vx;
+      p.vy = vy;
+      p.vz = vz;
+      p.scale = scale;
+      p.life = life;
+      p.maxLife = life;
+      p.r = r;
+      p.g = g;
+      p.b = b;
+      p.rotation = Math.random() * Math.PI * 2;
+      p.rotationSpeed = (Math.random() - 0.5) * 1.8;
+    },
+    spawnExhaustFlame: (x, y, z, directionX, directionY, directionZ, vx, vy, vz, scale, life) => {
+      const p = exhaustFlamePool[exhaustFlameCursor];
+      exhaustFlameCursor = (exhaustFlameCursor + 1) % EXHAUST_FLAME_POOL_SIZE;
+      p.active = true;
+      p.x = x;
+      p.y = y;
+      p.z = z;
+      p.vx = vx;
+      p.vy = vy;
+      p.vz = vz;
+      p.directionX = directionX;
+      p.directionY = directionY;
+      p.directionZ = directionZ;
+      p.scale = scale;
+      p.life = life;
+      p.maxLife = life;
+    },
+    updateParticles: (dt: number, cameraQuaternion: THREE.Quaternion) => {
       for (let i = 0; i < PARTICLE_POOL_SIZE; i++) {
         const p = particlePool[i];
         if (!p.active) continue;
@@ -1436,6 +1674,104 @@ export function buildNairobiWorld(
       }
       particleMesh.instanceMatrix.needsUpdate = true;
       if (particleMesh.instanceColor) particleMesh.instanceColor.needsUpdate = true;
+
+      for (let i = 0; i < TIRE_SMOKE_POOL_SIZE; i++) {
+        const p = tireSmokePool[i];
+        if (!p.active) {
+          smokeOpacity.array[i] = 0;
+          continue;
+        }
+        p.life -= dt;
+        if (p.life <= 0) {
+          p.active = false;
+          _dummyPos.set(0, -100, 0);
+          _dummyQuat.identity();
+          _dummyScale.setScalar(0.001);
+          _dummyMatrix.compose(_dummyPos, _dummyQuat, _dummyScale);
+          smokeInst.setMatrixAt(i, _dummyMatrix);
+          smokeOpacity.array[i] = 0;
+          continue;
+        }
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.z += p.vz * dt;
+        p.vy += 0.48 * dt;
+        p.vx *= Math.exp(-0.38 * dt);
+        p.vz *= Math.exp(-0.38 * dt);
+        p.rotation += p.rotationSpeed * dt;
+
+        const lifeFrac = p.life / p.maxLife;
+        const age = 1 - lifeFrac;
+        const puffGrow = 0.42 + 1.55 * age;
+        smokeOpacity.array[i] =
+          Math.min(1, age / 0.08) * Math.min(1, lifeFrac * 2.1) * 0.72;
+        _smokeQuat.copy(cameraQuaternion);
+        _smokeRoll.setFromAxisAngle(_screenNormal, p.rotation);
+        _smokeQuat.multiply(_smokeRoll);
+        _dummyPos.set(p.x, p.y, p.z);
+        _dummyScale.set(p.scale * puffGrow, p.scale * puffGrow * 1.12, 1);
+        _dummyMatrix.compose(_dummyPos, _smokeQuat, _dummyScale);
+        smokeInst.setMatrixAt(i, _dummyMatrix);
+        smokeInst.setColorAt(i, _smokeColor.setRGB(p.r, p.g, p.b));
+      }
+      smokeInst.instanceMatrix.needsUpdate = true;
+      if (smokeInst.instanceColor) smokeInst.instanceColor.needsUpdate = true;
+      smokeOpacity.needsUpdate = true;
+
+      for (let i = 0; i < EXHAUST_FLAME_POOL_SIZE; i++) {
+        const p = exhaustFlamePool[i];
+        if (!p.active) {
+          flameOpacity.array[i] = 0;
+          continue;
+        }
+        p.life -= dt;
+        if (p.life <= 0) {
+          p.active = false;
+          _dummyPos.set(0, -100, 0);
+          _dummyQuat.identity();
+          _dummyScale.setScalar(0.001);
+          _dummyMatrix.compose(_dummyPos, _dummyQuat, _dummyScale);
+          flameInst.setMatrixAt(i, _dummyMatrix);
+          flameOpacity.array[i] = 0;
+          continue;
+        }
+
+        p.x += p.vx * dt;
+        p.y += p.vy * dt;
+        p.z += p.vz * dt;
+        p.vx *= Math.exp(-0.6 * dt);
+        p.vy *= Math.exp(-0.6 * dt);
+        p.vz *= Math.exp(-0.6 * dt);
+        const lifeFrac = p.life / p.maxLife;
+        const lifeFade = Math.min(1, lifeFrac * 4);
+        const directionLengthSq =
+          p.directionX * p.directionX + p.directionY * p.directionY + p.directionZ * p.directionZ;
+        if (directionLengthSq > 0.0001) {
+          _flameDirection.set(p.directionX, p.directionY, p.directionZ).normalize();
+        } else {
+          _flameDirection.set(0, 0, 1);
+        }
+        _flameQuat.setFromUnitVectors(_flameAxis, _flameDirection);
+        _dummyPos.set(p.x, p.y, p.z);
+        _dummyScale.set(
+          p.scale * (0.62 + lifeFrac * 0.45),
+          p.scale * (0.7 + lifeFrac * 0.75),
+          p.scale * (0.62 + lifeFrac * 0.45),
+        );
+        _dummyMatrix.compose(_dummyPos, _flameQuat, _dummyScale);
+        flameInst.setMatrixAt(i, _dummyMatrix);
+        if (lifeFrac > 0.6) {
+          _flameColor.setRGB(1, 0.65 + lifeFrac * 0.35, 0.12 + lifeFrac * 0.65);
+        } else {
+          _flameColor.setRGB(1, 0.22 + lifeFrac * 0.72, 0.035 + lifeFrac * 0.16);
+        }
+        flameInst.setColorAt(i, _flameColor);
+        flameOpacity.array[i] = Math.min(1, (1 - lifeFrac) * 18) * lifeFade * 0.9;
+      }
+      flameInst.instanceMatrix.needsUpdate = true;
+      if (flameInst.instanceColor) flameInst.instanceColor.needsUpdate = true;
+      flameOpacity.needsUpdate = true;
     },
     updateRouteChevrons: (elapsed: number, visible: boolean) => {
       chevronInst.visible = visible;

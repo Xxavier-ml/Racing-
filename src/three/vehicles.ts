@@ -10,16 +10,16 @@ export interface PlayerVehicleRig {
   frontRightSteer: THREE.Group;
   wheelSpinGroups: THREE.Group[];
   brakeLightsMat: THREE.MeshStandardMaterial;
-  boostFlameLeft: THREE.Mesh;
-  boostFlameRight: THREE.Mesh;
+  boostFlameLeft: THREE.Group;
+  boostFlameRight: THREE.Group;
 }
 
 export interface RivalVehicleRig {
   root: THREE.Group;
   wheelSpinGroups: THREE.Group[];
   brakeLightsMat: THREE.MeshStandardMaterial;
-  boostFlameLeft: THREE.Mesh;
-  boostFlameRight: THREE.Mesh;
+  boostFlameLeft: THREE.Group;
+  boostFlameRight: THREE.Group;
 }
 
 export interface TrafficVehicleRig {
@@ -88,6 +88,55 @@ function createSimpleWheel(radius: number, width: number, tireMat: THREE.Materia
   const rim = new THREE.Mesh(rimGeo, rimMat);
   g.add(rim);
   return g;
+}
+
+const boostFlameOuterGeo = new THREE.ConeGeometry(0.18, 0.98, 14, 4);
+boostFlameOuterGeo.rotateX(Math.PI / 2);
+const boostFlameCoreGeo = new THREE.ConeGeometry(0.105, 0.72, 12, 4);
+boostFlameCoreGeo.rotateX(Math.PI / 2);
+const boostFlameHotGeo = new THREE.ConeGeometry(0.055, 0.46, 10, 3);
+boostFlameHotGeo.rotateX(Math.PI / 2);
+
+const boostFlameOuterMat = new THREE.MeshBasicMaterial({
+  color: 0xf97316,
+  transparent: true,
+  opacity: 0.62,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  toneMapped: false,
+});
+const boostFlameCoreMat = new THREE.MeshBasicMaterial({
+  color: 0x38bdf8,
+  transparent: true,
+  opacity: 0.86,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  toneMapped: false,
+});
+const boostFlameHotMat = new THREE.MeshBasicMaterial({
+  color: 0xfff3c4,
+  transparent: true,
+  opacity: 0.96,
+  blending: THREE.AdditiveBlending,
+  depthWrite: false,
+  toneMapped: false,
+});
+
+function createBoostJet(side: number): THREE.Group {
+  const jet = new THREE.Group();
+  jet.position.set(side * 0.52, 0.3, 2.72);
+
+  const outer = new THREE.Mesh(boostFlameOuterGeo, boostFlameOuterMat);
+  const core = new THREE.Mesh(boostFlameCoreGeo, boostFlameCoreMat);
+  const hotCore = new THREE.Mesh(boostFlameHotGeo, boostFlameHotMat);
+  core.position.z = 0.08;
+  hotCore.position.z = 0.12;
+  outer.renderOrder = 2;
+  core.renderOrder = 3;
+  hotCore.renderOrder = 4;
+  jet.add(outer, core, hotCore);
+  jet.visible = false;
+  return jet;
 }
 
 function addContactShadow(parent: THREE.Group, w: number, l: number, tex: THREE.Texture): void {
@@ -432,19 +481,9 @@ export function buildPlayerVehicle(
   plate.position.set(0, 0.52, 2.36);
   bodyGroup.add(plate);
 
-  // Twin Nitro Boost Flame Jets
-  const flameGeo = new THREE.ConeGeometry(0.16, 0.95, 10);
-  flameGeo.rotateX(Math.PI / 2);
-  const flameMat = new THREE.MeshBasicMaterial({
-    color: 0x38bdf8,
-    transparent: true,
-    opacity: 0.9,
-  });
-  const boostFlameLeft = new THREE.Mesh(flameGeo, flameMat);
-  boostFlameLeft.position.set(-0.52, 0.29, 2.75);
-  boostFlameLeft.visible = false;
-  const boostFlameRight = boostFlameLeft.clone();
-  boostFlameRight.position.x = 0.52;
+  // Twin layered nitro afterburners: warm outer sheath, cyan plasma and a hot white core.
+  const boostFlameLeft = createBoostJet(-1);
+  const boostFlameRight = createBoostJet(1);
   bodyGroup.add(boostFlameLeft, boostFlameRight);
 
   // 4 Alloy Wheels with Brake Calipers & Steering Front Pivots
@@ -535,14 +574,8 @@ export function buildRivalVehicle(
   plate.position.set(0, 0.52, 2.36);
   root.add(plate);
 
-  const flameGeo = new THREE.ConeGeometry(0.14, 0.85, 8);
-  flameGeo.rotateX(Math.PI / 2);
-  const flameMat = new THREE.MeshBasicMaterial({ color: 0xf97316, transparent: true, opacity: 0.85 });
-  const boostFlameLeft = new THREE.Mesh(flameGeo, flameMat);
-  boostFlameLeft.position.set(-0.52, 0.29, 2.7);
-  boostFlameLeft.visible = false;
-  const boostFlameRight = boostFlameLeft.clone();
-  boostFlameRight.position.x = 0.52;
+  const boostFlameLeft = createBoostJet(-1);
+  const boostFlameRight = createBoostJet(1);
   root.add(boostFlameLeft, boostFlameRight);
 
   const wheelSpinGroups: THREE.Group[] = [];

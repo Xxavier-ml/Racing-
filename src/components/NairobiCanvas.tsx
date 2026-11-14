@@ -601,6 +601,36 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
         boost: false,
       };
 
+      const emitExhaustFlames = (
+        x: number,
+        z: number,
+        heading: number,
+        velocityX: number,
+        velocityZ: number,
+      ) => {
+        const rearX = -Math.sin(heading);
+        const rearZ = Math.cos(heading);
+        const sideX = Math.cos(heading);
+        const sideZ = Math.sin(heading);
+        for (const side of [-1, 1]) {
+          const directionX = rearX + sideX * (Math.random() - 0.5) * 0.06;
+          const directionZ = rearZ + sideZ * (Math.random() - 0.5) * 0.06;
+          world.spawnExhaustFlame(
+            x + rearX * 2.62 + sideX * side * 0.52,
+            0.31,
+            z + rearZ * 2.62 + sideZ * side * 0.52,
+            directionX,
+            0.025 + Math.random() * 0.1,
+            directionZ,
+            velocityX * 0.86 + rearX * 9.5 + (Math.random() - 0.5) * 0.7,
+            0.15 + Math.random() * 0.42,
+            velocityZ * 0.86 + rearZ * 9.5 + (Math.random() - 0.5) * 0.7,
+            0.58 + Math.random() * 0.26,
+            0.16 + Math.random() * 0.1,
+          );
+        }
+      };
+
       function afterDraw(cb: () => void) {
         const gl = renderer.getContext() as WebGL2RenderingContext;
         if (!gl.fenceSync) {
@@ -831,37 +861,35 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
                   world.spawnSkidmark(s.player.x + backX - rx, s.player.z + backZ - rz, s.player.heading);
                   world.spawnSkidmark(s.player.x + backX + rx, s.player.z + backZ + rz, s.player.heading);
                 }
-                if (s.player.isDrifting && Math.random() < 0.85) {
-                  world.spawnParticle(
-                    s.player.x - Math.sin(s.player.heading) * 1.65,
-                    0.26,
-                    s.player.z + Math.cos(s.player.heading) * 1.65,
-                    (Math.random() - 0.5) * 3.5,
-                    1.2 + Math.random() * 1.6,
-                    (Math.random() - 0.5) * 3.5,
-                    0.95,
-                    0.55,
-                    0.84,
-                    0.86,
-                    0.9,
-                  );
+                const heading = s.player.heading;
+                const forwardX = Math.sin(heading);
+                const forwardZ = -Math.cos(heading);
+                const rightX = Math.cos(heading);
+                const rightZ = Math.sin(heading);
+                const rearX = -forwardX * 1.85;
+                const rearZ = -forwardZ * 1.85;
+                const lateralSpeed = s.player.vx * rightX + s.player.vz * rightZ;
+                const smokeRate = s.player.isDrifting ? 28 : 10;
+                if (Math.random() < 1 - Math.exp(-smokeRate * dt)) {
+                  const smokeBase = propsRef.current.weather === 'rainy' ? 0.86 : 0.76;
+                  for (const side of [-1, 1]) {
+                    world.spawnTireSmoke(
+                      s.player.x + rearX + rightX * side * 0.98,
+                      0.4 + Math.random() * 0.08,
+                      s.player.z + rearZ + rightZ * side * 0.98,
+                      s.player.vx * 0.14 - rightX * lateralSpeed * 0.2 - forwardX * 2 +
+                        (Math.random() - 0.5) * 0.7,
+                      0.72 + Math.random() * 0.58,
+                      s.player.vz * 0.14 - rightZ * lateralSpeed * 0.2 - forwardZ * 2 +
+                        (Math.random() - 0.5) * 0.7,
+                      s.player.isDrifting ? 0.72 + Math.random() * 0.42 : 0.52 + Math.random() * 0.28,
+                      s.player.isDrifting ? 1.02 + Math.random() * 0.42 : 0.7 + Math.random() * 0.28,
+                      smokeBase,
+                      smokeBase + 0.035,
+                      smokeBase + 0.07,
+                    );
+                  }
                 }
-              }
-
-              if (s.player.isBoosting && Math.random() < 0.85) {
-                world.spawnParticle(
-                  s.player.x - Math.sin(s.player.heading) * 2.45,
-                  0.36,
-                  s.player.z + Math.cos(s.player.heading) * 2.45,
-                  -Math.sin(s.player.heading) * 7,
-                  0.7,
-                  Math.cos(s.player.heading) * 7,
-                  0.52,
-                  0.28,
-                  0.22,
-                  0.76,
-                  0.98,
-                );
               }
 
               // Wet tire water spray rooster-tails during Nairobi Rain
@@ -903,6 +931,11 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
             true,
           );
 
+          const exhaustEmissionChance = 1 - Math.exp(-22 * dt);
+          if (s.player.isBoosting && Math.random() < exhaustEmissionChance) {
+            emitExhaustFlames(s.player.x, s.player.z, s.player.heading, s.player.vx, s.player.vz);
+          }
+
           // Update player vehicle 3D rig
           playerRig.root.position.set(s.player.x, 0, s.player.z);
           playerRig.root.rotation.y = -s.player.heading;
@@ -917,6 +950,12 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
             combinedInput.brake || s.player.isDrifting ? 2.8 : 0.75;
           playerRig.boostFlameLeft.visible = s.player.isBoosting;
           playerRig.boostFlameRight.visible = s.player.isBoosting;
+          const playerLeftPulse = 0.5 + 0.5 * Math.sin(s.elapsedTime * 72);
+          const playerRightPulse = 0.5 + 0.5 * Math.sin(s.elapsedTime * 79 + 0.9);
+          playerRig.boostFlameLeft.scale.set(0.9, 0.9, 0.74 + playerLeftPulse * 0.58);
+          playerRig.boostFlameRight.scale.set(0.9, 0.9, 0.74 + playerRightPulse * 0.58);
+          playerRig.boostFlameLeft.rotation.x = Math.sin(s.elapsedTime * 31) * 0.035;
+          playerRig.boostFlameRight.rotation.x = Math.cos(s.elapsedTime * 35) * 0.035;
 
           // Sync Rival 3D Rigs
           for (const r of s.rivals) {
@@ -931,6 +970,18 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
             rig.brakeLightsMat.emissiveIntensity = r.isBraking ? 2.5 : 0.7;
             rig.boostFlameLeft.visible = r.isBoosting;
             rig.boostFlameRight.visible = r.isBoosting;
+            const rivalFlamePulse = 0.5 + 0.5 * Math.sin(s.elapsedTime * 74 + r.x * 0.07);
+            rig.boostFlameLeft.scale.set(0.9, 0.9, 0.74 + rivalFlamePulse * 0.58);
+            rig.boostFlameRight.scale.set(0.9, 0.9, 0.74 + (1 - rivalFlamePulse) * 0.58);
+            if (r.isBoosting && Math.random() < exhaustEmissionChance) {
+              emitExhaustFlames(
+                r.x,
+                r.z,
+                r.heading,
+                Math.sin(r.heading) * r.speed,
+                -Math.cos(r.heading) * r.speed,
+              );
+            }
           }
 
           // Sync Best-Lap Translucent Ghost Racer
@@ -1109,7 +1160,7 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
             camera.updateProjectionMatrix();
           }
 
-          world.updateParticles(dt);
+          world.updateParticles(dt, camera.quaternion);
           world.updateRouteChevrons(s.elapsedTime, mode === 'circuit');
 
           // Throttled HUD telemetry (~15Hz, immediate on countdown transitions)
