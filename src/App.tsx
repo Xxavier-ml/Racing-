@@ -289,7 +289,7 @@ export default function App() {
   }, [telemetry]);
 
   return (
-    <main className="relative w-full h-full overflow-hidden bg-[#0f1419]">
+    <main className="race-game-shell relative w-full h-full overflow-hidden bg-[#0f1419]">
       {/* Isolated WebGL 3D Nairobi Canvas */}
       <NairobiCanvas
         ref={canvasRef}

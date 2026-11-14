@@ -356,7 +356,7 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
       });
       renderer.outputColorSpace = THREE.SRGBColorSpace;
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
-      renderer.toneMappingExposure = 1.12;
+      renderer.toneMappingExposure = 1.16;
       renderer.setPixelRatio(isSoftwareGl ? 1 : Math.min(window.devicePixelRatio, 2));
       renderer.shadowMap.enabled = !isSoftwareGl;
       renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -386,7 +386,7 @@ export const NairobiCanvas = forwardRef<NairobiCanvasHandle, NairobiCanvasProps>
         (container.clientWidth || window.innerWidth) /
           (container.clientHeight || window.innerHeight),
         0.5,
-        1500,
+        2400,
       );
 
       const maxAniso = renderer.capabilities.getMaxAnisotropy();

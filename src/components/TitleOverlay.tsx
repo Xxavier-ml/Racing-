@@ -34,9 +34,15 @@ export function TitleOverlay({
   onOpenSettings,
 }: TitleOverlayProps) {
   return (
-    <div className="fixed inset-0 z-20 pointer-events-none flex flex-col justify-between p-6 md:p-10">
+    <div className="race-title-screen fixed inset-0 z-20 pointer-events-none flex flex-col justify-between p-6 md:p-10">
       {/* Left-third asymmetric panel leaving center & right Nairobi skyline open */}
-      <div className="my-auto max-w-md pointer-events-auto bg-[#0f1419]/90 border border-white/15 rounded-xl p-6 md:p-7 shadow-2xl">
+      <div className="race-panel race-title-panel my-auto max-w-md pointer-events-auto rounded-xl p-6 md:p-7">
+        <div className="mb-4 flex items-center gap-2 text-[9px] font-bold uppercase tracking-[0.24em] text-slate-300">
+          <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(87,224,161,0.9)]" />
+          <span>Nairobi · Kenya</span>
+          <span className="h-px flex-1 bg-gradient-to-r from-white/25 to-transparent" />
+          <span className="font-mono text-amber-300">Circuit 01</span>
+        </div>
         {/* Bespoke inline SVG Nairobi Express Emblem */}
         <div className="mb-5">
           <svg
@@ -123,7 +129,8 @@ export function TitleOverlay({
                   key={v.id}
                   type="button"
                   onClick={() => onSelectPreset(v.id)}
-                  className={`w-full text-left px-3.5 py-2.5 rounded-lg border transition-colors ${
+                  data-selected={active}
+                  className={`race-vehicle-card w-full text-left px-3.5 py-2.5 rounded-lg border transition-colors ${
                     active
                       ? 'bg-amber-500/15 border-amber-400 text-white'
                       : 'bg-black/35 border-white/10 text-slate-300 hover:border-white/25 hover:text-white'
@@ -199,7 +206,7 @@ export function TitleOverlay({
               type="button"
               data-start="true"
               onClick={onStart}
-              className="flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm tracking-wide transition-colors cursor-pointer whitespace-nowrap"
+              className="race-button-primary flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm tracking-wide transition-colors cursor-pointer whitespace-nowrap"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>{selectedMode === 'circuit' ? 'Start Race' : 'Start Drive'}</span>
@@ -207,7 +214,7 @@ export function TitleOverlay({
             <button
               type="button"
               onClick={onOpenGuide}
-              className="inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-slate-100 font-semibold text-sm transition-colors cursor-pointer whitespace-nowrap"
+              className="race-button-secondary inline-flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-white/10 hover:bg-white/15 border border-white/15 text-slate-100 font-semibold text-sm transition-colors cursor-pointer whitespace-nowrap"
             >
               <MapPin className="w-4 h-4 text-emerald-400" />
               <span>City Map</span>
@@ -217,7 +224,7 @@ export function TitleOverlay({
             type="button"
             data-testid="title-settings-btn"
             onClick={onOpenSettings}
-            className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
+            className="race-button-secondary w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-slate-200 text-xs font-semibold transition-colors cursor-pointer"
           >
             <SlidersHorizontal className="w-3.5 h-3.5 text-amber-400" />
             <span>

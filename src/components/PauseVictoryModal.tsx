@@ -65,7 +65,7 @@ export function PauseVictoryModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="modal-heading"
-        className="w-full max-w-lg max-h-[92vh] overflow-y-auto bg-[#0c1117] border border-white/15 rounded-xl p-6 md:p-7 shadow-2xl"
+        className="race-panel race-result-panel w-full max-w-lg max-h-[92vh] overflow-y-auto rounded-xl p-6 md:p-7"
       >
         <div className="flex items-center justify-between gap-3 mb-2">
           <div className="flex items-center gap-3 min-w-0">
@@ -227,7 +227,7 @@ export function PauseVictoryModal({
             <button
               type="button"
               onClick={onResume}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm cursor-pointer"
+              className="race-button-primary w-full flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-sm cursor-pointer"
             >
               <Play className="w-4 h-4 fill-current" />
               <span>Resume Race</span>
@@ -237,7 +237,7 @@ export function PauseVictoryModal({
               type="button"
               data-start="true"
               onClick={onRestart}
-              className="w-full flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm cursor-pointer"
+              className="race-button-primary w-full flex items-center justify-center gap-2 px-5 py-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-sm cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Race Again</span>

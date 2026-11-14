@@ -101,7 +101,9 @@ export function buildNairobiWorld(
   disposables.push(envRT);
 
   const sky = new Sky();
-  sky.scale.setScalar(4500);
+  // Keep the atmospheric dome inside NairobiCanvas's camera far plane;
+  // otherwise the city silently falls back to the flat fog-color background.
+  sky.scale.setScalar(1800);
   scene.add(sky);
   const skyUniforms = sky.material.uniforms;
   skyUniforms['turbidity'].value = 6.2;
@@ -126,8 +128,8 @@ export function buildNairobiWorld(
   const sunLight = new THREE.DirectionalLight(0xffcf99, 2.75);
   sunLight.position.copy(sunVec).multiplyScalar(220);
   sunLight.castShadow = !isSoftwareGl;
-  sunLight.shadow.mapSize.width = 1024;
-  sunLight.shadow.mapSize.height = 1024;
+  const shadowSize = isSoftwareGl ? 512 : Math.min(2048, renderer.capabilities.maxTextureSize);
+  sunLight.shadow.mapSize.set(shadowSize, shadowSize);
   const d = 135;
   sunLight.shadow.camera.left = -d;
   sunLight.shadow.camera.right = d;
@@ -139,6 +141,13 @@ export function buildNairobiWorld(
   sunLight.shadow.normalBias = 0.02;
   scene.add(sunLight);
   scene.add(sunLight.target);
+
+  // Cool sky-side fill keeps shaded cars, windows and street furniture readable
+  // against the warm late-afternoon key light, without flattening their shape.
+  const cityFill = new THREE.DirectionalLight(0x9dcfff, 0.42);
+  cityFill.position.set(-sunVec.x * 150, 78, -sunVec.z * 150);
+  scene.add(cityFill);
+  scene.add(cityFill.target);
 
   // 2. Textured Ground Basin & Distant Ngong Hills Horizon Ring
   const grassMat = trackMat(

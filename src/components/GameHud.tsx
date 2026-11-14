@@ -208,7 +208,7 @@ export function GameHud({
   });
 
   return (
-    <div className="fixed inset-0 z-10 pointer-events-none p-2.5 sm:p-3.5 md:p-5 flex flex-col justify-between">
+    <div className="race-hud-screen fixed inset-0 z-10 pointer-events-none p-2.5 sm:p-3.5 md:p-5 flex flex-col justify-between">
       {/* Top Row: Minimap Overlay (Left) | Race Telemetry & Direction Strip (Center, wraps cleanly below on <lg) | Utility Buttons (Right) */}
       <div className="flex flex-wrap lg:flex-nowrap items-start justify-between gap-2 sm:gap-3">
         {/* Top-Left: Enhanced City Layout & Upcoming Checkpoints Minimap Overlay + Turn-by-Turn GPS */}
@@ -219,7 +219,7 @@ export function GameHud({
         >
           <div
             data-testid="minimap-overlay"
-            className={`rounded-xl bg-[#0c1117]/94 border border-white/15 p-1.5 shadow-xl shrink-0 flex flex-col transition-all duration-150 ${
+            className={`race-glass-panel rounded-xl bg-[#0c1117]/94 border border-white/15 p-1.5 shadow-xl shrink-0 flex flex-col transition-all duration-150 ${
               minimapExpanded
                 ? 'w-56 h-64 sm:w-60 sm:h-68 md:w-68 md:h-76'
                 : 'w-24 h-28 sm:w-32 sm:h-36 md:w-40 md:h-44 [@media(max-height:480px)]:w-24 [@media(max-height:480px)]:h-24'
@@ -538,7 +538,7 @@ export function GameHud({
             </svg>
           </div>
 
-          <div className="bg-[#0c1117]/92 border border-white/15 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 [@media(max-height:480px)]:py-1 shadow-lg w-[138px] sm:w-[205px] lg:w-[215px] shrink-0">
+          <div className="race-glass-panel bg-[#0c1117]/92 border border-white/15 rounded-xl px-2 py-1.5 sm:px-3 sm:py-2 [@media(max-height:480px)]:py-1 shadow-lg w-[138px] sm:w-[205px] lg:w-[215px] shrink-0">
             <div className="flex items-center justify-between gap-2 mb-1">
               <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-400 truncate">
                 {guidance?.currentStreet ?? 'Kenyatta Avenue'}
@@ -587,7 +587,7 @@ export function GameHud({
 
         {/* Center-Top: Motorsport Position / Split / Combo Cluster (lg+) + Direction Identifiers (All Viewports) */}
         <div className="order-3 lg:order-2 basis-full lg:basis-auto min-w-0 flex flex-col items-center gap-1.5 sm:gap-2">
-          <div className="hidden lg:flex bg-[#0c1117]/92 border border-white/15 rounded-xl px-5 py-2 shadow-xl items-center gap-5">
+          <div className="race-glass-panel hidden lg:flex bg-[#0c1117]/92 border border-white/15 rounded-xl px-5 py-2 shadow-xl items-center gap-5">
             {mode === 'circuit' && (
               <>
                 <div className="text-center">
@@ -686,7 +686,7 @@ export function GameHud({
           {/* Direction Identifier Bar: Next Turn / Wrong-Way / Finish Line + Where Rival Pack Went (Visible on ALL viewports) */}
           <div
             data-testid="direction-identifier-bar"
-            className={`border rounded-xl px-2.5 sm:px-3 py-1 sm:py-1.5 [@media(max-height:480px)]:py-0.5 shadow-lg flex items-center gap-2 sm:gap-2.5 flex-wrap justify-center max-w-[96vw] lg:max-w-[520px] ${
+            className={`race-direction-strip border rounded-xl px-2.5 sm:px-3 py-1 sm:py-1.5 [@media(max-height:480px)]:py-0.5 shadow-lg flex items-center gap-2 sm:gap-2.5 flex-wrap justify-center max-w-[96vw] lg:max-w-[520px] ${
               isWrongWay
                 ? 'bg-rose-950/94 border-rose-400/75 text-rose-100'
                 : onFinalSprint
