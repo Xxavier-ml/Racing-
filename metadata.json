@@ -1,0 +1,6 @@
+{
+  "name": "Nairobi Express: 3D City Circuit & Navigator",
+  "description": "High-detail 3D Nairobi racing and urban navigation simulator featuring Uhuru Highway, KICC, Times Tower, left-hand matatu traffic, and interactive city wayfinding.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
