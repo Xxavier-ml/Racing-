@@ -1,0 +1,42 @@
+{
+  "generatedFrom": "LegacyWebPrototype/src/game/nairobiMap.ts",
+  "coordinateSystem": {
+    "legacy": "three.js metres: +X east, +Z south, +Y up, heading 0 = north (-Z)",
+    "unreal": "centimetres: +X north, +Y east, +Z up, yaw 0 = +X",
+    "conversion": "Unreal.X = -Legacy.Z * 100; Unreal.Y = Legacy.X * 100; Yaw = Legacy.heading"
+  },
+  "counts": {
+    "checkpoints": 7,
+    "racingLinePoints": 23,
+    "streets": 8,
+    "landmarks": 10,
+    "roundabouts": 5,
+    "cityBlocks": 20,
+    "vehicles": 3
+  },
+  "circuitLengthMeters": 1326.3,
+  "spawn": {
+    "legacy": {
+      "x": -168,
+      "z": -50.5,
+      "heading": 1.5707963267948966
+    },
+    "unreal": {
+      "x": 5050,
+      "y": -16800,
+      "yaw": 1.5707963267948966
+    }
+  },
+  "finishLine": {
+    "legacy": {
+      "x": -95,
+      "z": -14,
+      "heading": 0
+    },
+    "unreal": {
+      "x": 1400,
+      "y": -9500,
+      "yaw": 0
+    }
+  }
+}

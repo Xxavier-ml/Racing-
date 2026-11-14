@@ -1,0 +1,6 @@
+Name,DisplayName,X,Y,OuterRadiusCm,IslandRadiusCm
+RB_KENYATTA,Kenyatta Ave Roundabout,4500,-9500,2100,850
+RB_HAILE,Haile Selassie Roundabout,-11500,-9500,2000,800
+RB_NYAYO,Nyayo Stadium (Bunyala) Roundabout,-22000,-9500,2300,950
+RB_GLOBE,Globe Cinema / Univ. Way Roundabout,18000,5500,1800,700
+RB_RAILWAYS,Railways Roundabout,-11500,5500,1800,700

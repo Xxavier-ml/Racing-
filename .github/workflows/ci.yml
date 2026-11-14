@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  verifiable-checks:
+    name: Rules, data and legacy suites (no Unreal required)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Structural audit of Unreal C++
+        run: python3 Tools/check_cpp_structure.py
+
+      - name: Compile and run engine-free race rules
+        run: ./Tools/SimHarness/run_tests.sh
+
+      - name: Preserved legacy prototype suite
+        working-directory: LegacyWebPrototype
+        run: npx --yes tsx --test src/game/nairobiLogic.test.ts
+
+      - name: Regenerate track data and fail on drift
+        run: |
+          npx --yes tsx Tools/Migration/export_track_data.ts
+          if ! git diff --quiet -- Content/Data Documentation/Migration/TRACK_DATA_MANIFEST.json; then
+            echo "::error::Migrated track data is stale. Run npx tsx Tools/Migration/export_track_data.ts and commit the result."
+            git --no-pager diff --stat -- Content/Data
+            exit 1
+          fi
+
+      - name: Validate DataTable contracts
+        run: node Tools/Migration/validate_exports.mjs
+
+      - name: Guard against committed secrets
+        run: |
+          if grep -rInE '(AKIA[0-9A-Z]{16}|-----BEGIN (RSA|OPENSSH) PRIVATE KEY-----|sk_live_[0-9a-zA-Z]{16,})' \
+              --include='*.cpp' --include='*.h' --include='*.ini' --include='*.ts' --include='*.json' . ; then
+            echo "::error::Potential credential material found in the repository."
+            exit 1
+          fi
+          echo "No credential material detected."
+
+  unreal-build:
+    name: Unreal build and automation tests (self-hosted runner)
+    # Runs only when a runner with Unreal Engine 5.8 is configured through the UE_ROOT
+    # repository variable. It is intentionally skipped rather than faked when absent.
+    if: ${{ vars.UE_ROOT != '' }}
+    runs-on: [self-hosted, windows, unreal]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Compile editor target
+        shell: pwsh
+        run: |
+          & "${{ vars.UE_ROOT }}\Engine\Build\BatchFiles\Build.bat" `
+            NairobiRacingEditor Win64 Development `
+            -Project="${{ github.workspace }}\NairobiRacing.uproject" `
+            -WaitMutex -FromMsBuild
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+      - name: Run Unreal automation tests
+        shell: pwsh
+        run: |
+          & "${{ vars.UE_ROOT }}\Engine\Binaries\Win64\UnrealEditor-Cmd.exe" `
+            "${{ github.workspace }}\NairobiRacing.uproject" `
+            -ExecCmds="Automation RunTests NairobiRacing;Quit" `
+            -unattended -nop4 -nullrhi -nosplash -log
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+
+  unreal-build-status:
+    name: Unreal build status
+    needs: [unreal-build]
+    if: ${{ always() && vars.UE_ROOT == '' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Explain why the engine job was skipped
+        run: |
+          echo "Unreal build/test was NOT run: no UE_ROOT variable or self-hosted UE runner is configured."
+          echo "Set the repository variable UE_ROOT to the engine install path on a Windows runner to enable it."

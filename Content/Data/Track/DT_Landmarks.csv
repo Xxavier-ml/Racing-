@@ -1,0 +1,11 @@
+Name,DisplayName,ShortName,District,X,Y,WaypointX,WaypointY,ColliderHalfWCm,ColliderHalfDCm,HeightCm,LatitudeE6,LongitudeE6
+KICC,KICC (Kenyatta Int. Convention Centre),KICC Tower,City Square,-1000,-1800,-3500,-1800,1600,1600,7600,-1288600,36823300
+TIMES_TOWER,Times Tower (KRA Headquarters),Times Tower,Southern CBD,-8000,-2200,-11000,-2200,1400,1400,9200,-1290400,36824200
+PARLIAMENT,Parliament Buildings & Clock Tower,Parliament,Parliament Road,-1000,-5800,-3500,-5800,1400,1400,4400,-1289600,36819900
+UHURU_PARK,Uhuru Park & Nyayo Monument,Uhuru Park,West CBD Edge,-1800,-14600,-1800,-10200,600,600,2800,-1290100,36815900
+NYAYO_STADIUM,Nyayo National Stadium,Nyayo Stadium,Bunyala / Mombasa Rd,-25600,-15800,-22000,-9500,3200,2200,2200,-1304100,36824400
+ARCHIVES,Kenya National Archives,National Archives,Downtown CBD,1200,8200,1200,5500,1300,1500,2200,-1284900,36826100
+RAILWAY_STATION,Nairobi Railway Station,Railways Station,Railways,-15600,6800,-12200,5500,2000,1400,1800,-1290900,36828600
+AFYA_CENTRE,Afya Centre,Afya Centre,Eastern CBD,-8600,16200,-8600,13500,1300,1300,5400,-1288900,36829500
+JAMIA_MOSQUE,Jamia Mosque,Jamia Mosque,Central CBD,9500,1400,5000,1400,1600,1400,3000,-1283600,36821100
+UON_TOWERS,University of Nairobi Towers,UoN Towers,University Way,21500,-2800,18000,-2800,1600,1400,6200,-1279700,36817100

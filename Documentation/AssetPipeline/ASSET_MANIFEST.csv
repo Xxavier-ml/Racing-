@@ -1,0 +1,53 @@
+AssetId,Category,IntendedUse,Source,Licence,Variants,LODs,Dependencies,Status,Notes
+SK_Vehicle_RallyGT,Vehicle,Hero player car: Safari Rally GT,To be commissioned or created in DCC,Original work (required),3 paint schemes + brake/head/reverse light params,LOD0-LOD3,PHYS_Vehicle_RallyGT; MS_Engine_RallyGT; NS_Exhaust; NS_TyreSmoke,Specified - NOT PRODUCED,No unlicensed model may be substituted
+SK_Vehicle_Nganya,Vehicle,Hero player car: Nganya 111 Turbo matatu,To be commissioned or created in DCC,Original work (required),3 liveries + route board decal,LOD0-LOD3,PHYS_Vehicle_Nganya; MS_Engine_Nganya,Specified - NOT PRODUCED,Original design inspired by Nairobi matatu culture
+SK_Vehicle_SavannahV8,Vehicle,Hero player car: Savannah V8 Cruiser,To be commissioned or created in DCC,Original work (required),3 paint schemes,LOD0-LOD3,PHYS_Vehicle_SavannahV8; MS_Engine_SavannahV8,Specified - NOT PRODUCED,No manufacturer badge or grille copying
+SM_Traffic_Matatu,Environment/Traffic,City traffic matatu,To be created in DCC,Original work (required),4 liveries + route numbers,LOD0-LOD2,MS_Matatu_Engine; MI_Traffic_Matatu,Specified - NOT PRODUCED,Replaces the cube placeholder
+SM_Traffic_BodaBoda,Environment/Traffic,City traffic motorcycle,To be created in DCC,Original work (required),3 colours,LOD0-LOD2,MS_Boda_Engine,Specified - NOT PRODUCED,Rider rig optional
+SM_Traffic_CityHoppa,Environment/Traffic,City bus,To be created in DCC,Original work (required),2 liveries,LOD0-LOD2,MS_Bus_Engine,Specified - NOT PRODUCED,
+SM_Traffic_Saloon,Environment/Traffic,Generic saloon taxi,To be created in DCC,Original work (required),4 colours + taxi stripe,LOD0-LOD2,MS_Saloon_Engine,Specified - NOT PRODUCED,
+SM_Traffic_Safari,Environment/Traffic,Tour safari 4x4,To be created in DCC,Original work (required),2 colours,LOD0-LOD2,MS_Safari_Engine,Specified - NOT PRODUCED,
+SM_Road_Tile_2Lane,Environment/Modular,Road module 2 lanes 10 m,To be created in DCC,Original work (required),straight/curve/junction/roundabout,LOD0-LOD1,M_Road_Tarmac; MI_Road_Tarmac_Wet,Specified - NOT PRODUCED,25 cm grid; 100 cm tile length
+SM_Road_Tile_4Lane,Environment/Modular,Road module 4 lanes 20 m,To be created in DCC,Original work (required),straight/curve/L-turn,LOD0-LOD1,M_Road_Tarmac,Specified - NOT PRODUCED,
+SM_Kerb_Sidewalk,Environment/Modular,Kerb + sidewalk strip,To be created in DCC,Original work (required),inner/outer corner,LOD0-LOD1,M_Concrete,Specified - NOT PRODUCED,
+SM_Median_Planter,Environment/Modular,Road median with planting,To be created in DCC,Original work (required),3 variants,LOD0-LOD1,M_Foliage; SM_Tree_Jacaranda,Specified - NOT PRODUCED,Uhuru Hwy / Kenyatta Ave
+SM_Roundabout_Ring,Environment/Modular,Roundabout carriageway ring,To be created in DCC,Original work (required),18 m and 23 m outer radius,LOD0-LOD1,M_Road_Tarmac,Specified - NOT PRODUCED,Matches migrated roundabout radii
+SM_Building_Tower_A,Environment/Buildings,CBD office tower shell,To be created in DCC,Original work (required),4 heights + 3 facade materials,LOD0-LOD2,M_Glass_Curtain; M_Concrete,Specified - NOT PRODUCED,Nanite-friendly
+SM_Building_Shophouse,Environment/Buildings,Low-rise CBD shophouse,To be created in DCC,Original work (required),3 widths + awning variants,LOD0-LOD2,M_Concrete; M_Awning,Specified - NOT PRODUCED,Arcade/verandah detail
+SM_Landmark_KICC,Environment/Landmarks,KICC cylindrical tower + cone amphitheatre,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Terracotta; M_Glass,Specified - NOT PRODUCED,Signature silhouette accuracy required
+SM_Landmark_TimesTower,Environment/Landmarks,Times Tower stepped massing,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Glass_Blue; M_Granite,Specified - NOT PRODUCED,140 m reference height
+SM_Landmark_Parliament,Environment/Landmarks,Parliament + clock tower,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Stone_Light; M_Copper_Roof,Specified - NOT PRODUCED,
+SM_Landmark_NyayoStadium,Environment/Landmarks,Nyayo Stadium bowl,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Concrete,Specified - NOT PRODUCED,
+SM_Landmark_RailwayStation,Environment/Landmarks,Railway station + red roof,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Stone; M_Roof_Red,Specified - NOT PRODUCED,
+SM_Landmark_AfyaCentre,Environment/Landmarks,Afya Centre cylinder,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Green_Panel,Specified - NOT PRODUCED,
+SM_Landmark_JamiaMosque,Environment/Landmarks,Jamia Mosque domes + minarets,To be created in DCC,Original work (required),1,LOD0-LOD2,M_Marble; M_Silver_Dome,Specified - NOT PRODUCED,
+SM_Expressway_Viaduct,Environment/Infrastructure,Elevated expressway deck,To be created in DCC,Original work (required),straight/ramp/LOD variants,LOD0-LOD1,M_Concrete; M_Asphalt,Specified - NOT PRODUCED,Piers every 45 m at x=-122 in legacy data
+SM_Streetlight_KPLC,Environment/Furniture,Street light pole,To be created in DCC,Original work (required),single/double arm,LOD0-LOD1,M_Metal; M_Emissive_Sodium,Specified - NOT PRODUCED,
+SM_TrafficSignal,Environment/Furniture,Signal head + controller box,To be created in DCC,Original work (required),4-way/2-way,LOD0-LOD1,M_Metal; MI_Signal_Lens,Specified - NOT PRODUCED,16 s cycle driven by core rules
+SM_Tree_Jacaranda,Environment/Foliage,Jacaranda tree,To be created in DCC,Original work (required),3 sizes + billboard,LOD0-LOD2,M_Foliage,Specified - NOT PRODUCED,Uhuru Park / Kenyatta Ave
+SM_Palm,Environment/Foliage,Palm tree,To be created in DCC,Original work (required),3 sizes + billboard,LOD0-LOD2,M_Foliage,Specified - NOT PRODUCED,Kenyatta Avenue median
+SM_MatatuStage,Environment/Furniture,Matatu stage shelter,To be created in DCC,Original work (required),2 variants,LOD0-LOD1,M_Metal; M_Fabric,Specified - NOT PRODUCED,Tom Mboya St
+M_Road_Tarmac,Environment/Material,Tarmac master material,To be created in DCC,Original work (required),wet/dry MI,LOD0-LOD1,T_Road_Tarmac_BC/N/ORM,Specified - NOT PRODUCED,Exposes Wetness parameter
+T_Road_Tarmac,Environment/Texture,Tarmac surface set,To be created in DCC,Original work (required),4k BC/N/ORM,NA,M_Road_Tarmac,Specified - NOT PRODUCED,
+NS_Rain,Environment/VFX,Rainfall around the camera,To be created in UE,Original work (required),light/heavy,LOD0-LOD1,T_Rain_Atlas,Specified - NOT PRODUCED,Cull distance + fixed bounds
+NS_TyreSmoke,Vehicle/VFX,Tyre smoke on slip,To be created in UE,Original work (required),front/rear,LOD0-LOD1,T_Smoke_Atlas,Specified - NOT PRODUCED,
+NS_TyreSpray,Vehicle/VFX,Wet-road spray behind wheels,To be created in UE,Original work (required),1,LOD0-LOD1,T_Spray_Atlas; MI_Road_Tarmac_Wet,Specified - NOT PRODUCED,Driven by weather RainIntensity01
+NS_Exhaust,Vehicle/VFX,Exhaust flame on shift/nitrous,To be created in UE,Original work (required),1,LOD0-LOD1,T_Flame_Atlas,Specified - NOT PRODUCED,
+NS_CollisionSparks,Vehicle/VFX,Impact sparks,To be created in UE,Original work (required),1,LOD0-LOD1,T_Spark_Atlas,Specified - NOT PRODUCED,Triggered from NotifyHit
+MS_Engine_RallyGT,Vehicle/Audio,Layered engine MetaSound,To be created in UE + recorded/licensed sources,Original or licensed (record licence),idle/load/turbo layers,NA,S_Engine_* loops,Specified - NOT PRODUCED,Params RPM/Load/Speed/TyreSlip
+MS_Engine_Nganya,Vehicle/Audio,Matatu engine MetaSound,To be created in UE + recorded/licensed sources,Original or licensed (record licence),2 variants,NA,S_Engine_* loops,Specified - NOT PRODUCED,
+MS_Engine_SavannahV8,Vehicle/Audio,V8 engine MetaSound,To be created in UE + recorded/licensed sources,Original or licensed (record licence),1,NA,S_Engine_* loops,Specified - NOT PRODUCED,
+S_TyreSqueal_Loop,Vehicle/Audio,Tyre squeal loop,Licensed library or recording,Record licence before import,2 intensities,NA,NA,Specified - NOT PRODUCED,
+S_CityAmbience_Nairobi,Environment/Audio,City ambience bed,Licensed library or field recording,Record licence before import,day/night/rain,NA,NA,Specified - NOT PRODUCED,
+S_MenuMusic,UI/Audio,Menu music,Licensed or commissioned,Record licence before import,1 loop,NA,NA,Specified - NOT PRODUCED,
+WBP_RaceHud,UI,In-race HUD widget,To be created in UMG,Original work (required),km/h + mph variants,NA,ANairobiHUD contract,Specified - NOT PRODUCED,Canvas HUD is the interim fallback
+WBP_MainMenu,UI,Main menu,To be created in UMG,Original work (required),1,NA,NA,Specified - NOT PRODUCED,
+WBP_VehicleSelect,UI,Vehicle select / garage,To be created in UMG,Original work (required),1,NA,UNairobiVehicleConfiguration,Specified - NOT PRODUCED,
+WBP_Results,UI,Race results + leaderboard,To be created in UMG,Original work (required),1,NA,ANairobiRaceGameState::Results,Specified - NOT PRODUCED,
+WBP_Settings,UI,Graphics/audio/controls settings,To be created in UMG,Original work (required),1,NA,FNairobiGraphicsSettings,Specified - NOT PRODUCED,Applier not implemented yet
+WBP_Loading,UI,Loading screen,To be created in UMG,Original work (required),circuit/free-drive,NA,NA,Specified - NOT PRODUCED,
+WBP_Lobby,UI,Online lobby/matchmaking status,To be created in UMG,Original work (required),1,NA,UNairobiOnlineSubsystem,Specified - NOT PRODUCED,Blocked on backend decision
+PHYS_Vehicle_RallyGT,Physics,Chaos physics asset for Rally GT,To be created in UE,Original work (required),1,NA,SK_Vehicle_RallyGT,Specified - NOT PRODUCED,Wheel radii and suspension limits per config
+PHYS_Vehicle_Nganya,Physics,Chaos physics asset for Nganya,To be created in UE,Original work (required),1,NA,SK_Vehicle_Nganya,Specified - NOT PRODUCED,
+PHYS_Vehicle_SavannahV8,Physics,Chaos physics asset for Savannah V8,To be created in UE,Original work (required),1,NA,SK_Vehicle_SavannahV8,Specified - NOT PRODUCED,
+AM_VehicleWheels,Animation,Wheel spin/steer animation blueprint,To be created in UE,Original work (required),1,NA,SK_Vehicle_*; wheel bones,Specified - NOT PRODUCED,Consumes GetWheelSpinDegrees + steering angle

@@ -1,0 +1,9 @@
+Name,DisplayName,SwahiliTag,bNorthSouth,FixAxisCm,StartAlongCm,EndAlongCm,WidthCm,bHasMedian,SpeedLimitKph
+UHURU_HWY,Uhuru Highway (A104),Barabara Kuu ya Uhuru,true,-9500,24000,-26500,2600,true,80
+MOI_AVE,Moi Avenue,Barabara ya Moi,true,5500,22500,-16500,2000,false,50
+TOM_MBOYA,Tom Mboya Street,Mtaa wa Tom Mboya,true,13500,20500,-15500,1800,false,45
+UNIVERSITY_WAY,University Way,Njia ya Chuo Kikuu,false,18000,-17500,16500,2000,true,50
+KENYATTA_AVE,Kenyatta Avenue,Barabara ya Kenyatta,false,4500,-18500,17000,2400,true,60
+CITY_HALL_WAY,City Hall Way,Njia ya Ukumbi wa Jiji,false,-3500,-9500,13500,1800,false,45
+HAILE_SELASSIE,Haile Selassie Avenue,Barabara ya Haile Selassie,false,-11500,-17500,18500,2200,true,55
+MOMBASA_LANGATA,Mombasa / Lang'ata Road,Barabara ya Mombasa,false,-22000,-22500,21500,2600,true,80

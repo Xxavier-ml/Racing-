@@ -1,8 +1,53 @@
+# ---------------------------------------------------------------------------
+# Unreal Engine
+# ---------------------------------------------------------------------------
+Binaries/
+DerivedDataCache/
+Intermediate/
+Saved/
+Build/
+.vs/
+.vscode/
+.idea/
+*.sln
+*.suo
+*.opensdf
+*.sdf
+*.VC.db
+*.VC.opendb
+*.xcodeproj
+*.xcworkspace
+*.code-workspace
+*.autosave
+*.pdb
+*.obj
+*.tlog
+*.lastbuildstate
+*.res
+Plugins/*/Binaries/
+Plugins/*/Intermediate/
+
+# Keep curated content and config, never generated caches.
+!Content/**/*.csv
+!Content/**/*.json
+
+# ---------------------------------------------------------------------------
+# Legacy web prototype
+# ---------------------------------------------------------------------------
+LegacyWebPrototype/node_modules/
+LegacyWebPrototype/dist/
+LegacyWebPrototype/.vite/
 node_modules/
-build/
 dist/
 coverage/
 .DS_Store
-*.log
-.env*
+
+# ---------------------------------------------------------------------------
+# Secrets and tooling
+# ---------------------------------------------------------------------------
+.env
+.env.*
 !.env.example
+*.log
+.venv/
+__pycache__/

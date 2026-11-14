@@ -1,0 +1,4 @@
+Name,DisplayName,Subtitle,Plate,LegacyPresetId,TopSpeedKph,LegacyMaxSpeedMps,LegacyAccel,LegacyHandling,LegacyDriftGrip,SuggestedMassKg,SuggestedPeakTorqueNm,TuningStatus
+RALLY,Safari Rally GT,Twin-turbo AWD tarmac coupe · 230 km/h,KDR 254N,rally,230,64,46,2.95,0.9,1380,22218,NeedsEditorTuning
+NGANYA,Nganya 111 Turbo,Widebody Nairobi street matatu · High Nitro,KDM 111G,nganya,212,59,42,2.55,0.84,2050,30135,NeedsEditorTuning
+SAFARI,Savannah V8 Cruiser,Armored twin-V8 diplomatic interceptor,KDL 001A,safari,205,57,44,2.65,0.88,2320,35728,NeedsEditorTuning
